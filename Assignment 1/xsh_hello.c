@@ -24,10 +24,10 @@ shellcmd xsh_hello(int nargs, char *args[])
 	}
 	else if(nargs < 2)	{
 		printf("No argument given!");
-	} else if(nargs > 2)	{
+	} else	{
 		printf("Too many arguments!");
 	}
 	
-
+	printf("\n");
 	return 0;
 }
