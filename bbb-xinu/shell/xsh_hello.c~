@@ -18,17 +18,16 @@ shellcmd xsh_hello(int nargs, char *args[])
 	int32	i;			/* walks through args array	*/
 
 
-	if (nargs > 1) {
-		printf("Hello %s", args[1]);
-
-		for (i = 2; i < nargs; i++) {
-			printf("%s", args[i]);
-		}
-		printf(".....Welcome to Xinu !! !! !!");
+	if (nargs == 2) {
+		printf("Hello %s", args[1]);		
+		printf("\n****** Welcome to Xinu ******");
 	}
-	else
-		printf("!! !! !! Hi !! !! !!");
-	printf("\n");
+	else if(nargs < 2)	{
+		printf("No argument given!");
+	} else if(nargs > 2)	{
+		printf("Too many arguments!");
+	}
+	
 
 	return 0;
 }
