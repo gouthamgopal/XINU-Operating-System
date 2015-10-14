@@ -1,0 +1,7 @@
+#include<future.h>
+syscall future_free(future* f){
+
+  memfree(f, sizeof(future));
+
+  return OK;
+}

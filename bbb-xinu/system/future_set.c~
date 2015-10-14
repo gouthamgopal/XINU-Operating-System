@@ -1,0 +1,22 @@
+#include<future.h>
+
+syscall future_set(future* var, int* val)
+{
+	
+	if (var->state == FUTURE_WAITING && var->flag == FUTURE_EXCLUSIVE)	{
+		var->value = *val;
+		var->state = FUTURE_VALID;
+		//resume(var->pid);
+		return OK;
+	}
+	
+	if (var->state == FUTURE_EMPTY && var->flag == FUTURE_EXCLUSIVE)	{
+		var->value = *val;
+		var->state = FUTURE_VALID;
+		return OK;
+	}
+	
+	if (var->state == FUTURE_VALID && var->flag == FUTURE_EXCLUSIVE)	{
+		return SYSERR;
+	}
+}

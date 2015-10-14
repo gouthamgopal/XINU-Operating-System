@@ -4,7 +4,7 @@
 
 
    /*Global variable for producer consumer*/
-   extern int n = 0; /*this is just declaration*/
+   extern int n; /*this is just declaration*/
 
   /*function Prototype*/
   void consumer(int count);

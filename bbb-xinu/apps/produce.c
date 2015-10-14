@@ -1,14 +1,19 @@
- #include <prodcons.h>
+#include <prodcons.h>
 
- void producer(int count)
- {     
+void producer(sid32 produced, sid32 consumed, int count)
+{
+	int i=1;
 
-	int32 i;
-	
-	for(i = 1; i <= count; i++)	{
+	//Use system call wait() and signal() with predefined semaphores produced and consumed to synchronize critical section
+	//Code to produce values less than equal to count, 
+	//produced value should get assigned to global variable 'n'.
 
+	while(i<=count)
+	{
 		n++;
-		printf("Produced : %d\n", n);
-		
+		wait(consumed);
+		printf("Produced:%d \n",n);
+		i++;
+		signal(produced);
 	}
- }
+}

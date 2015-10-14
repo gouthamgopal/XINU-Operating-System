@@ -6,14 +6,10 @@
      //of n is less than or equal to count
      //print consumed value e.g. consumed : 8
 	int32 i;
-	for(i = 1; i <= count; i++)	{
-
-		
-		printf("Consumed : %d\n", n);
-		
-		if(n == count)	{
+	for(i = 0; i < 15; i++)	{
+		printf("Consumed : %d\n", n[i]);
+		if(i == 15)	{
 			break;
-	}
-
+		}
 	}
  }

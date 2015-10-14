@@ -2,13 +2,34 @@
 
  void producer(int count)
  {     
-
-	int32 i;
+	int32 i = 0;
 	
-	for(i = 1; i <= count; i++)	{
-
-		n++;
-		printf("\nProduced : %d", n);
-		
+//	if(count > 15)
+	for(i = 0; i < 15; i++)	{
+		n[i]=i;
+//		count-=15;
+//		if(count < 0)
+//			count = 0;
+		if(i >= 15)
+//			count = 0;
+		printf("Produced : %d\n", n[i]);
 	}
+//	signal consumer
  }
+
+/*
+if count < 15
+	for(i = 0; i < count; i++)	{
+		n[i]=i;
+		printf("Produced : %d\n", n[i]);
+	}
+	sem = 0
+else
+	while sem=1 and count>0
+		produce 15
+		sem=0
+
+while sem=0
+	consume 15
+	sem=1
+*/

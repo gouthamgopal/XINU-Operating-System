@@ -1,0 +1,40 @@
+#include<future.h>
+
+syscall future_get(future* var, int* val)
+{
+
+
+	/*if (var->state == FUTURE_EMPTY && var->flag == FUTURE_EXCLUSIVE)	{ 
+		var->pid = getpid();
+		var->state = FUTURE_WAITING;
+		suspend(getpid());
+		printf("");
+		*val = var->value;	
+		return OK;
+	}	
+	if (var->state == FUTURE_VALID && var->flag == FUTURE_EXCLUSIVE)	{ 
+		var->pid = getpid();
+		printf("");
+		*val = var->value;	// or int *
+		return OK;
+	}	
+	if (var->state == FUTURE_WAITING && var->flag == FUTURE_EXCLUSIVE)	{
+		return SYSERR;	
+	} */
+
+	if (var->state == FUTURE_VALID && var->flag == FUTURE_EXCLUSIVE)	{ 
+		var->pid = getpid();
+		printf("");
+		*val = var->value;	// or int *
+		return OK;
+	}	
+	if (var->state == FUTURE_WAITING && var->flag == FUTURE_EXCLUSIVE)	{
+		return SYSERR;	
+	}
+
+	while (var->state == FUTURE_EMPTY && var->flag == FUTURE_EXCLUSIVE)	{
+		//Do nothing
+	}		
+	return OK;
+}
+
