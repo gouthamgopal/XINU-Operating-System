@@ -1,10 +1,46 @@
-#include<future.h>
+
+#include <future.h> 
+/*
+* using the future_flags as an index
+*/
+
+
 
 future* future_alloc(int future_flags){
-  future* f = (future*) memget(sizeof(future));
- 
-  f->flag = future_flags;
-  f->state = FUTURE_EMPTY;
-  
-  return f;
+	
+	future *f;
+	queue *setq;
+	queue *getq;
+	int *val;
+	intmask	mask;
+	mask=disable();	
+	
+	f=(future *)getmem(sizeof(future));
+
+	f->value = (int *)getmem(sizeof(int));
+		
+	f->state = FUTURE_EMPTY;
+	f->flag = future_flags;
+
+	if(future_flags != FUTURE_EXCLUSIVE){
+		if(future_flags != FUTURE_SHARED){
+			setq = (queue *)getmem(sizeof(queue));
+			setq->fr = 0;
+			setq->rr = -1;
+			setq->c=0;
+			f->set_queue = setq;
+		}
+		getq = (queue *)getmem(sizeof(queue));
+		getq->fr = 0;
+		getq->rr = -1;		
+		getq->c=0;			
+		f->get_queue = getq;
+	}
+	
+	if(f == SYSERR){
+			return SYSERR;
+	}
+	
+	restore(mask);
+	return f;
 }

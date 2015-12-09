@@ -17,6 +17,17 @@ shellcmd xsh_hello(int nargs, char *args[])
 {
 	int32	i;			/* walks through args array	*/
 
+	/* For argument '--help', emit help about the 'cat' command	*/
+
+	if (nargs == 2 && strncmp(args[1], "--help", 7) == 0) {
+		printf("Use: %s [file...]\n\n", args[0]);
+		printf("Description:\n");
+		printf("\tFirst XINU command\n");
+		printf("Options:\n");
+		printf("\tAccepts one parameter\n");
+		return 0;
+	}
+
 
 	if (nargs == 2) {
 		printf("Hello %s", args[1]);		

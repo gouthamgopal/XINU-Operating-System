@@ -1,40 +1,98 @@
-#include<future.h>
+#include <future.h> 
 
-syscall future_get(future* var, int* val)
-{
+/* if future has value return */
+syscall future_get(future *f, int *value){
+	pid32 pr;	
+
+	intmask	mask;
+
+	mask=disable();
 
 
-	/*if (var->state == FUTURE_EMPTY && var->flag == FUTURE_EXCLUSIVE)	{ 
-		var->pid = getpid();
-		var->state = FUTURE_WAITING;
-		suspend(getpid());
-		printf("");
-		*val = var->value;	
-		return OK;
-	}	
-	if (var->state == FUTURE_VALID && var->flag == FUTURE_EXCLUSIVE)	{ 
-		var->pid = getpid();
-		printf("");
-		*val = var->value;	// or int *
-		return OK;
-	}	
-	if (var->state == FUTURE_WAITING && var->flag == FUTURE_EXCLUSIVE)	{
-		return SYSERR;	
-	} */
-
-	if (var->state == FUTURE_VALID && var->flag == FUTURE_EXCLUSIVE)	{ 
-		var->pid = getpid();
-		printf("");
-		*val = var->value;	// or int *
-		return OK;
-	}	
-	if (var->state == FUTURE_WAITING && var->flag == FUTURE_EXCLUSIVE)	{
-		return SYSERR;	
+	if (f->state == FUTURE_VALID)
+	{
+	//push f.value to value
+   	 	*value = f->value;
+		restore(mask);
+    		return OK;
+ 	}
+	if(f->state == FUTURE_EMPTY)
+	{
+	//change status to waiting
+		f->state=FUTURE_WAITING;
+		if(f->flag == FUTURE_EXCLUSIVE)
+		{
+		//for exclusive mode, suspend the current pid and assign f.value
+			f->pid=currpid;
+			suspend(f->pid);
+			*value = *f->value;
+			restore(mask);
+			return OK;
+		}
+		else 
+		if(f->flag == FUTURE_SHARED)
+		{
+			f->state=FUTURE_WAITING;			
+			pr = feq(currpid, f->get_queue);
+			if(pr == (pid32) SYSERR){
+				restore(mask);
+				return SYSERR;
+			}				
+			suspend(currpid);
+			*value = *f->value;
+			restore(mask);
+			return OK;	
+		}
+		else if(f->flag == FUTURE_QUEUE){
+			if(!futIsEmpty(f->set_queue)){
+				*value = *f->value;
+				resume(fdq(f->set_queue));
+			}else{	
+				f->state=FUTURE_WAITING;			
+				pr = feq(currpid, f->get_queue);
+				if(pr == (pid32) SYSERR){
+					restore(mask);
+					return SYSERR;
+				}				
+				suspend(currpid);
+				*value = *f->value;
+			}
+			restore(mask);
+			return OK;	
+		}
 	}
 
-	while (var->state == FUTURE_EMPTY && var->flag == FUTURE_EXCLUSIVE)	{
-		//Do nothing
-	}		
-	return OK;
-}
+	if(f->flag == FUTURE_SHARED && f->state==FUTURE_WAITING)
+	{
+		pr = feq(currpid, f->get_queue);
+		if(pr == (pid32) SYSERR){
+			restore(mask);
+			return SYSERR;
+		}	
+		suspend(currpid);
+		*value = *f->value;
+		restore(mask);
+		return OK;	
+	}
 
+	if(f->flag == FUTURE_QUEUE && f->state==FUTURE_WAITING){
+		if(!fisempty(f->set_queue)){
+			resume(fdq(f->set_queue));
+		}else{
+			pr = feq(currpid, f->get_queue);
+			if(pr == (pid32) SYSERR){
+				restore(mask);
+				return SYSERR;
+			}	
+			suspend(currpid);
+			*value = *f->value;
+		}
+		
+		restore(mask);
+		return OK;	
+	}
+
+
+ 	restore(mask);
+  	return SYSERR;
+}

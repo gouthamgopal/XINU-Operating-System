@@ -1,35 +1,23 @@
- #include <prodcons.h>
+#include <prodcons.h>
 
- void producer(int count)
- {     
-	int32 i = 0;
-	
-//	if(count > 15)
-	for(i = 0; i < 15; i++)	{
-		n[i]=i;
-//		count-=15;
-//		if(count < 0)
-//			count = 0;
-		if(i >= 15)
-//			count = 0;
-		printf("Produced : %d\n", n[i]);
+void producer(sid32 produced, sid32 consumed, int count)
+{
+      //Code to produce values less than equal to count, 
+      //produced value should get assigned to global variable 'n'.
+
+      //Use system call wait() and signal() with predefined semaphores produced and consumed to synchronize critical section
+      //Code to produce values less than equal to count, 
+      //produced value should get assigned to global variable 'n'.
+      //print produced value e.g. produced : 8
+
+	while(n<=count)
+	{
+		wait(consumed);
+		printf("Produced: %d\n",n);
+		signal(produced);
+		if (n==count)
+			break;
+		else
+			n++
 	}
-//	signal consumer
- }
-
-/*
-if count < 15
-	for(i = 0; i < count; i++)	{
-		n[i]=i;
-		printf("Produced : %d\n", n[i]);
-	}
-	sem = 0
-else
-	while sem=1 and count>0
-		produce 15
-		sem=0
-
-while sem=0
-	consume 15
-	sem=1
-*/
+}

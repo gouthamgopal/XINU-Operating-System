@@ -95,6 +95,8 @@ status	arp_resolve (
 	arptr->arstate = AR_PENDING;
 	arptr->arpaddr = nxthop;
 	arptr->arpid = currpid;
+	
+
 
 	/* Hand-craft an ARP Request packet */
 
@@ -214,6 +216,7 @@ void	arp_in (
 		if (arptr->arstate == AR_PENDING) {
 			/* Mark resolved and notify waiting process */
 			arptr->arstate = AR_RESOLVED;
+			arptr->time = clktime;
 			send(arptr->arpid, OK);
 		}
 	}
@@ -296,7 +299,7 @@ void	arp_in (
  *------------------------------------------------------------------------
  */
 int32	arp_alloc ()
-{
+{   
 	int32	slot;			/* Slot in ARP cache		*/
 
 	/* Search for a free slot */

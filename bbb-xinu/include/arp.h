@@ -22,6 +22,7 @@
 #define	AR_FREE		0		/* Slot is unused		*/
 #define	AR_PENDING	1		/* Resolution in progress	*/
 #define	AR_RESOLVED	2		/* Entry is valid		*/
+#define ARP_TIMEUP	300		/*Time at which to clear ARP_cache*/
 
 #pragma pack(2)
 struct	arppacket {			/* ARP packet for IP & Ethernet	*/
@@ -37,6 +38,7 @@ struct	arppacket {			/* ARP packet for IP & Ethernet	*/
 	uint32	arp_sndpa;		/* ARP sender's IP address	*/
 	byte	arp_tarha[ARP_HALEN];	/* ARP target's Ethernet addr	*/
 	uint32	arp_tarpa;		/* ARP target's IP address	*/
+	
 };
 #pragma pack()
 
@@ -45,6 +47,7 @@ struct	arpentry {			/* Entry in the ARP cache	*/
 	uint32	arpaddr;		/* IP address of the entry	*/
 	pid32	arpid;			/* Waiting process or -1 	*/
 	byte	arhaddr[ARP_HALEN];	/* Ethernet address of the entry*/
+	uint32	time;		         /* ARP time	*/
 };
 
 extern struct	arpentry arpcache[];

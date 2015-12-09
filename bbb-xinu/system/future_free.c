@@ -1,14 +1,21 @@
-#include <future.h>
+#include <future.h> 
 
-syscall future_free(future* fut)
-{
-	int retValue=0;
+/* sets state of future to FREE */
+syscall future_free(future *f){
+	intmask mask;
+	mask = disable();
+	if(f->flag == FUTURE_EXCLUSIVE){		
+		freemem((char*)f, sizeof(f));
+		freemem((char*)f->value, sizeof(int));
+	}else{
+		if(f->flag != FUTURE_SHARED){
+			freemem((char*)f->set_queue, sizeof(queue));
+		}
+		freemem((char*)f->get_queue, sizeof(queue));		
+		freemem((char*)f->value, sizeof(int));
+		freemem((char*)f, sizeof(f));		
+	}	
+	restore(mask);
+  	return OK;
 
-	//future is passes to freemem to free the memory
-	retValue = freemem(fut,sizeof(future));  
-   
-	if(retValue==SYSERR)
-	        return SYSERR;
-
-	return OK;
 }

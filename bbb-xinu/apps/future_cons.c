@@ -1,21 +1,24 @@
-#include <future.h>
+#include<prodcons.h>
 
-unsigned int future_cons(future *fut) {
+uint future_cons(future *fut) {
 
-int i, status=0;
+	
+	int i, status;
 
-   while(1)
-   {
-	//status gives the current status of the future that is passed
 	status = future_get(fut, &i);
-	if (status < 1)
-	   continue;
-	else 
-		if (status == 1) 
-		{
-			printf("Consumed: %d \n",i);
-    			break;
-  		}
-    }     
-    return OK;
+
+	if (status < 1) {
+		printf("future_get failed\n");
+		return -1;
+	}
+	
+	printf("it produced %d (Consumer PID : %d)\n", i, currpid);
+	if(fut->flag == FUTURE_EXCLUSIVE){
+		future_free(fut);				
+		
+	}else if(fisempty(fut->get_queue)){
+		future_free(fut);
+	}
+	
+	return OK;
 }

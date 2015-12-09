@@ -1,53 +1,108 @@
-#include <ctype.h>
 #include <prodcons.h>
 
-int n;
-sid32 produced, consumed;                 
-/*Now global variable n will be on Heap so it is accessible all the processes i.e. consume and produce*/
+#define MAX_COUNT 2000
 
-int isNumber(const char *val)	{	
-	while(*val != '\0')	{
-		if(*val < '0' || *val > '9')	{
+int n;                            //Definition for global variable 'n'
+future *f_exclusive, *f_shared, *f_queue;     		//Defination for futures
+sid32 consumed, produced;	//semaphores
+
+int isNumeric(const char *str){
+    while(*str != '\0')
+    {
+        if(*str < '0' || *str > '9')
+            return 0;
+        str++;
+    }
+    return 1;
+}
+
+   /*Now global variables will be on Heap so they are accessible to all the processes i.e. consume and produce*/
+
+   shellcmd xsh_prodcons(int nargs, char *args[])
+   {
+      //Argument verifications and validations
+	if(nargs > 2){
+		printf("Too many arguments.\nType prodcons --help for details.\n");
+		return 0;
+	}
+
+	//initialize count to default value
+	int count = MAX_COUNT;
+
+	/*if there are command line args check if user has asked for help
+	*if not check if user has provided valid input ((int) count and greater than 0)
+	*else terminate execution 
+	*/
+
+	if (nargs == 2) {
+
+		if(strncmp(args[1], "--help", 7) == 0){
+			printf("Description:\n");
+			printf("\t--help\t display this help and exit\n");
+			printf("\t-f \t execute futures\n");
+			printf("\t\t by default it will execute producer-consumer.\n");
+			printf("Arguments in case of producer-consumer:\n");
+			printf("\tmax value of shared variable (integer){default value is 2000}\n");
 			return 0;
 		}
-		val++;
-	}
-	return 1;
-}
 
-shellcmd xsh_prodcons(int nargs, char *args[])
-{
-      //Argument verifications and validations
-	int count=0;             //local varible to hold count	
-	
-	if (nargs == 2) {		
-		if(strncmp(args[1], "--help", 7) == 0)	{
-			printf("\nThis command executes producer & consumer!\n");
-		}else if(strncmp(args[1], "-f", 3) == 0) {
+			if(strncmp(args[1], "-f", 3) == 0){
 
-			future *f1, *f2, *f3;
- 			f1 = future_alloc(FUTURE_EXCLUSIVE);
-	  		f2 = future_alloc(FUTURE_EXCLUSIVE);
-	  		f3 = future_alloc(FUTURE_EXCLUSIVE);
+			f_exclusive = future_alloc(FUTURE_EXCLUSIVE);
+			f_shared = future_alloc(FUTURE_SHARED);
+			f_queue = future_alloc(FUTURE_QUEUE);
+					 
+			// Test FUTURE_EXCLUSIVE
+			resume( create(future_cons, 1024, 20, "fcons1", 1, f_exclusive) );
+			resume( create(future_prod, 1024, 20, "fprod1", 1, f_exclusive) );
+			sleep(1);
+			// Test FUTURE_SHARED
+			resume( create(future_cons, 1024, 20, "fcons2", 1, f_shared) );
+			resume( create(future_cons, 1024, 20, "fcons3", 1, f_shared) );
+			resume( create(future_cons, 1024, 20, "fcons4", 1, f_shared) ); 
+			resume( create(future_cons, 1024, 20, "fcons5", 1, f_shared) );
+			resume( create(future_prod, 1024, 20, "fprod2", 1, f_shared) );
+			sleep(1);
+			// Test FUTURE_QUEUE
+			resume( create(future_cons, 1024, 20, "fcons6", 1, f_queue) );
+			resume( create(future_cons, 1024, 20, "fcons7", 1, f_queue) );
+			resume( create(future_cons, 1024, 20, "fcons7", 1, f_queue) );
+			resume( create(future_cons, 1024, 20, "fcons7", 1, f_queue) );
+			resume( create(future_prod, 1024, 20, "fprod3", 1, f_queue) );
+			resume( create(future_prod, 1024, 20, "fprod4", 1, f_queue) );
+			resume( create(future_prod, 1024, 20, "fprod5", 1, f_queue) );
+			resume( create(future_prod, 1024, 20, "fprod6", 1, f_queue) );
+			
+			
+			return 0;		
 
-			resume( create(future_cons, 1024, 20, "fcons1", 1, f1) );
-			resume( create(future_prod, 1024, 20, "fprod1", 1, f1) );
-			resume( create(future_cons, 1024, 20, "fcons2", 1, f2) );
-			resume( create(future_prod, 1024, 20, "fprod2", 1, f2) );
-			resume( create(future_cons, 1024, 20, "fcons3", 1, f3) );
-			resume( create(future_prod, 1024, 20, "fprod3", 1, f3) );
-		} else if(args[1] > 0) {
-			/*Initialise semaphores*/
-			consumed = semcreate(1);      
-			produced = semcreate(0);
-			count = atoi(args[1]);				
-			//create the process producer and consumer and put them in ready queue.
-			resume( create(consumer, 1024, 20, "consumer", 3, produced, consumed, count) );
-			resume( create(producer, 1024, 20, "producer", 3, produced, consumed, count) );	
+		}else{
+
+			//check args[1](integer) if present assign value to count
+			if(!isNumeric(args[1])){
+				printf("Invalid argument.\nType prodcons --help for details.\n");
+				return 0; 
+			}
+			count = (atoi)(args[1]);
+
+			//if command line count is 0 terminate. 
+			if(count == 0){
+				printf("Nothing to produce.\n");
+				return 0;	
+			}			
 		}
+	}
+
+	n=0;	
 	
-	} else {
-		printf("Invalid argument\n");
-		return 1;
-	}    	  
-}
+	/*Initialise semaphores*/
+	produced = semcreate(0);
+	consumed = semcreate(1);            
+
+	//create the process produer and consumer and put them in ready queue.
+	//Look at the definations of function create and resume in exinu/system folder for reference.      
+	resume( create(producer, 1024, 20, "producer", 1, count) );
+	resume( create(consumer, 1024, 20, "consumer", 1, count) );
+
+	return 0;
+   }

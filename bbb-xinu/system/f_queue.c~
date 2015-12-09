@@ -1,0 +1,58 @@
+/* queue.c - enqueue, dequeue */
+
+#include <f_queue.h>
+
+
+
+/*------------------------------------------------------------------------
+ *  dequeue  -  Remove and return the first process on a list
+ *------------------------------------------------------------------------
+ */
+pid32	fdq(
+	  queue* q	/* ID of queue to use		*/
+	  
+	)
+{
+	if(q->c == 0){
+		return (pid32)SYSERR;
+	}
+	pid32 pid;
+	pid = q->parray[q->fr];
+	q->fr = (q->fr + 1)%QUEUE_SIZE;
+	q->c--;
+	return pid;
+}
+
+int	futIsEmpty(
+	  queue* q	/* ID of queue to use		*/
+	  
+	)
+{
+	if(q->c == 0)	//empty
+		return 1;
+	return 0;
+}
+
+/*------------------------------------------------------------------------
+ *  enqueue  -  Insert a process at the tail of a queue
+ *------------------------------------------------------------------------
+ */
+pid32	feq(
+	  pid32		pid,	/* ID of process to insert	*/
+	  queue* q		/* ID of queue to use		*/
+	  
+	  
+	)
+{
+
+	if(q->c == QUEUE_SIZE) //queue full
+		return (pid32)SYSERR;
+
+	q->rr = (q->rr + 1) % QUEUE_SIZE; //circular queue
+	q->parray[q->rr] = pid;
+	q->c++;
+
+	return pid;
+}
+
+

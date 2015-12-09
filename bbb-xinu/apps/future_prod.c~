@@ -1,16 +1,13 @@
- #include <future.h>
+#include<prodcons.h>
 
- unsigned int future_prod(future *fut) {
-  int i, j;
-      j = (int)fut;
-    //j = 0;
-  for (i=0; i<10; i++) {
-    j += i;
-    
-  }
-  printf("Produced:  %d\n", j);
-    future_set(fut, &j);
+uint future_prod(future *fut) 
+{
 
-  return OK;
+	int i = 0, z = 0;
+	z = (int)fut;
+
+	for (i=0; i<1000; i++)
+		z += i;
+	future_set(fut, &z);
+	return OK;
 }
-

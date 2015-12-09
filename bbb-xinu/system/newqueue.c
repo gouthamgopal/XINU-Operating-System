@@ -1,7 +1,6 @@
 /* newqueue.c - newqueue */
 
 #include <xinu.h>
-
 /*------------------------------------------------------------------------
  *  newqueue  -  Allocate and initialize a queue in the global queue table
  *------------------------------------------------------------------------
@@ -28,3 +27,4 @@ qid16	newqueue(void)
 	queuetab[queuetail(q)].qkey  = MINKEY;
 	return q;
 }
+

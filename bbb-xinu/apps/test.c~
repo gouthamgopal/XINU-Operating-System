@@ -1,0 +1,34 @@
+#include <newmem.h>
+
+int add(int i);
+struct	procent	*prptr;
+int stkLen;
+char *stkPtr;
+
+ void test(){
+  	
+	int sum = add(100);
+	prptr = &proctab[currpid];
+	stkPtr = prptr->prstkbase;
+	stkLen = prptr->prstklen;
+	while(stkLen > 0){
+		if(*stkPtr == 'A'){
+			printf("Max Stack Used: %d\n", prptr->prstkbase-stkPtr);
+			break;
+		}
+		stkPtr--;
+		stkLen--;
+	}
+	memkill()
+	return 0;
+		
+ }
+
+int add(int i){
+	
+	int sum = 0;
+	if(i!=0){		
+		sum = i + add(--i);
+	}	
+	return sum;	
+}

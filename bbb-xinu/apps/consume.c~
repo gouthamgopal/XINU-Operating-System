@@ -1,15 +1,23 @@
 #include <prodcons.h>
 
- void consumer(int count)
- {
-     //Code to consume values of global variable 'n' until the value
-     //of n is less than or equal to count
-     //print consumed value e.g. consumed : 8
-	int32 i;
-	for(i = 0; i < 15; i++)	{
-		printf("Consumed : %d\n", n[i]);
-		if(i == 15)	{
+void consumer(sid32 produced, sid32 consumed, int count)
+{
+	//Code to consume values of global variable 'n' until the value of n is less than or equal to count
+	
+	while(1)
+	{
+		wait(produced);
+		printf("Consumed: %d\n", n);
+		signal(consumed);
+/*		if (n==count)
+		{
+			semdelete(produced);
+			semdelete(consumed);
 			break;
 		}
+		else
+			signal(consumed);*/
 	}
- }
+	semdelete(produced);
+	semdelete(consumed);
+}
