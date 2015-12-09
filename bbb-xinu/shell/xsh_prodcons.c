@@ -45,7 +45,11 @@ int isNumeric(const char *str){
 			printf("\tmax value of shared variable (integer){default value is 2000}\n");
 			return 0;
 		}
+			if(strncmp(args[1], "-n", 3) == 0){
+			resume( create(net_consumer, 1024, 20, "fcons1", 1, f_exclusive) );
+			resume( create(net_producer, 1024, 20, "fprod1", 1, f_exclusive) );
 
+}
 			if(strncmp(args[1], "-f", 3) == 0){
 
 			f_exclusive = future_alloc(FUTURE_EXCLUSIVE);
