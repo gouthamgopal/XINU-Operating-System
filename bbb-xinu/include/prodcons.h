@@ -15,6 +15,6 @@ void producer(int count);
 uint future_cons(future *fut);
 uint future_prod(future *fut);
 
-uint net_consumer(future *fut);
-uint net_producer(future *fut);
+uint nw_cons(future *fut);
+uint nw_prods(future *fut);
 

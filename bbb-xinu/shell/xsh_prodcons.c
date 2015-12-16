@@ -46,11 +46,15 @@ int isNumeric(const char *str){
 			return 0;
 		}
 			if(strncmp(args[1], "-n", 3) == 0){
-			resume( create(net_consumer, 1024, 20, "fcons1", 1, f_exclusive) );
-			resume( create(net_producer, 1024, 20, "fprod1", 1, f_exclusive) );
+			
+			printf("Inside N Args");
+			f_exclusive = future_alloc(FUTURE_EXCLUSIVE);
+			resume( create(nw_cons, 1024, 20, "fcons1", 1, f_exclusive) );
+			resume( create(nw_prods, 1024, 20, "fprod1", 1, f_exclusive) );
+			return 0;		
 
 }
-			if(strncmp(args[1], "-f", 3) == 0){
+			else if(strncmp(args[1], "-f", 3) == 0){
 
 			f_exclusive = future_alloc(FUTURE_EXCLUSIVE);
 			f_shared = future_alloc(FUTURE_SHARED);

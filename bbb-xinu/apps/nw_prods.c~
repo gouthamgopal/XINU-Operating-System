@@ -10,7 +10,7 @@ uint nw_prods(future *fut) {
 	}
 	int result = future_set(fut, &j);
 	return result;*/
-	printf("in prods");
+
 	int i, j;
 	j = netserver();
 	

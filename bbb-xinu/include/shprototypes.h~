@@ -86,3 +86,6 @@ extern	shellcmd  xsh_prodcons	(int32, char *[]);
 extern	shellcmd  xsh_memmgmt	(int32, char *[]);
 
 extern	shellcmd  xsh_network   (int32, char *[]);
+
+/* For Filesystem Implementation. in file xsh_fstest.c */
+extern	shellcmd  xsh_fstest   (int32, char *[]);
