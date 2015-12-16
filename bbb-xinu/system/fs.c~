@@ -375,8 +375,8 @@ int fs_write(int fd, void *buf, int nbytes){
 	int bytesToWrite=0, minBytes=0;
 	/* Check for valid fd and mode in the open file table */
 	if(fd<0 || fd>NUM_FD){
-		printf("\n Not a valid file descriptor.");
-		printf("\n So write task failed.");
+		printf("\n Invalid file descriptor.");
+		printf("\n Could not write.");
 		return -1;
 	}
 	

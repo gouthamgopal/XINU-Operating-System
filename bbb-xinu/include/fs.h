@@ -1,3 +1,4 @@
+//#include <xinu.h>
 #ifndef FS_H
 #define FS_H
 
@@ -20,6 +21,19 @@
 #define INODE_TYPE_FILE 1
 #define INODE_TYPE_DIR 2
 
+#define USED 1
+
+#define SB_BLK 0
+#define BM_BLK 1
+#define RT_BLK 2
+
+#define NUM_FD 16
+
+#define INODES_PER_BLOCK (fsd.blocksz / sizeof(struct inode))
+#define NUM_INODE_BLOCKS (( (fsd.ninodes % INODES_PER_BLOCK) == 0) ? fsd.ninodes / INODES_PER_BLOCK : (fsd.ninodes / INODES_PER_BLOCK) + 1)
+#define FIRST_INODE_BLOCK 2
+
+#define MAXSIZE 1536
 
 struct inode {
   int id;
@@ -30,14 +44,20 @@ struct inode {
   int blocks[INODEBLOCKS];
 };
 
-#define FSTATE_CLOSED 0
-#define FSTATE_OPEN 1
+#define FS_CLOSE 0
+#define FS_OPEN 1
+
+#define FS_BEGIN 0
+#define FS_CURR 1
+#define FS_EOF 2
 
 struct filetable {
   int state;
   int fileptr;
   struct dirent *de;
   struct inode in;
+  int mode;
+  int filesize;
 };
 
 struct dirent {
@@ -60,11 +80,16 @@ struct fsystem {
   struct directory root_dir;
 };
 
+int inodes_state[128];
+static struct fsystem fsd;
+struct filetable oft[NUM_FD];
+char block_cache[MDEV_BLOCK_SIZE+1];
+
 /* file and directory functions */
 int fs_open(char *filename, int flags);
 int fs_close(int fd);
 int fs_create(char *filename, int mode);
-int fs_seek(int fd, int offset);
+int fs_seek(int fd, int position, int offset);
 int fs_read(int fd, void *buf, int nbytes);
 int fs_write(int fd, void *buf, int nbytes);
 
@@ -93,3 +118,4 @@ void fs_printfreemask(void);
 void fs_print_fsd(void);
 
 #endif /* FS_H */
+
